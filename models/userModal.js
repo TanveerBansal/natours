@@ -41,16 +41,19 @@ const userSchema = new mongoose.Schema({
                 return val === this.password
             },
             message: "Passwords are not same"
-    
+
         }
     },
+    passwordChangedAt: Date
 })
 
+
+
 //this pre() hook is lies between getting the data from the input feild and before saving the document
-userSchema.pre('save', async function(next){
+userSchema.pre('save', async function (next) {
     //only run this fn if password is actually modified
-    if(!this.isModified("password")) return next()
-    
+    if (!this.isModified("password")) return next()
+
     //hash the password with  12 
     this.password = await bcrypt.hash(this.password, 10)
 
@@ -59,12 +62,25 @@ userSchema.pre('save', async function(next){
     next()
 })
 
-userSchema.methods.correctPassword = async function(candidatePassword, userPassword){
+userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword)
 }
 // OR
 // userSchema.method("correctPassword",async function(candidatePassword, userPassword){
 //     return await bcrypt.compare(candidatePassword, userPassword)
 // })
+
+
+userSchema.methods.changePasswordAfter =  function(JWTTimeStamp) {
+    if (this.passwordChangedAt) {
+        const changedTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10)
+        // console.log(changedTimeStamp, JWTTimeStamp);
+        return JWTTimeStamp < changedTimeStamp
+    }
+
+    //false means not changed
+    return false
+}
+
 const User = mongoose.model("User", userSchema)
 module.exports = User

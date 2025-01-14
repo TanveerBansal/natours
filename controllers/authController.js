@@ -1,3 +1,4 @@
+const { promisify } = require("util")
 const jwt = require("jsonwebtoken")
 const User = require("../models/userModal")
 const catchAsync = require("../utils/catchAsync")
@@ -13,7 +14,8 @@ exports.signup = catchAsync(async (req, res, next) => {
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
-        passwordConfirm: req.body.password
+        passwordConfirm: req.body.password,
+        passwordChangedAt: req.body.passwordChangedAt
     })
 
     const token = signToken(newUser._id)
@@ -53,21 +55,32 @@ exports.login = catchAsync(async (req, res, next) => {
 
 
 exports.protect = catchAsync(async (req, res, next) => {
-    //1. Getting the token and check if tis's there
+    //1. Getting the token and check if it's there
     let token;
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
         token = req.headers.authorization.split(" ")[1]
-        console.log(token);
-        
+        // console.log(token);
+
     }
-    if(!token) {
+    if (!token) {
         return next(new AppError("You are not loggedin!, Please log in to get access", 401))
     }
     // 2. Verfication token
+    //by using promisify we are converting jwt.verify callback-based fn into a fn that return promise
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
+    // console.log(decoded);
 
     //3. Check if user still exist
-
+    const currentUser = await User.findById(decoded.id)
+    if (!currentUser) {
+        return next(new AppError("The user belonging to this token is no longer exist", 401))
+    }
     //4. If user change password after token was issued
+    if (currentUser.changePasswordAfter(decoded.iat)) {
+        return next(new AppError("User recently changed password, Please login again!"), 401)
+    }
 
+    //GRANT ACCESS TO PROTECTED ROUTE
+    req.user = currentUser
     next()
 })
