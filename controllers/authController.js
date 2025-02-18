@@ -84,3 +84,19 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.user = currentUser
     next()
 })
+
+
+exports.restrictTo = (...roles) => {
+    // so by default middleware dont accept parameter, but here we needed so here we are first accepting the roles and the return a function which id middleware
+
+    // roles = ["admin", "lead-guide"]
+
+    return (req, res, next) => {
+        if (!roles.includes(req.user.role)) {
+            return next(
+                new AppError("You don't have permission to perform this action", 403)
+            )
+        }
+        next()
+    }
+}
