@@ -5,6 +5,7 @@ const User = require("../models/userModal")
 const catchAsync = require("../utils/catchAsync")
 const AppError = require("../utils/appError")
 const sendEmail = require("../utils/email")
+const bcrypt = require("bcryptjs/dist/bcrypt")
 
 
 const signToken = (id) => {
@@ -146,8 +147,8 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     // 1 Get the user based on the token
     const hashedToken = crypto.createHash("sha256").update(req.params.token).digest('hex')
 
-    const user = await User.findOne({ passwordResetToken: hashedToken, passwordResetExpires: { $gt: Date.now() } })    
-   
+    const user = await User.findOne({ passwordResetToken: hashedToken, passwordResetExpires: { $gt: Date.now() } })
+
     // 2 If the session is not expired and there is user, set the password
     if (!user) {
         return next(new AppError(`Token is invalid or has expired.`, 400))
@@ -170,4 +171,33 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
             user
         }
     })
+})
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+    // 1 Get user from collection
+    const { password, passwordCurrent, passwordConfirm } = req.body
+
+    const user = await User.findById(req.user.id).select("+password")
+    console.log({ id: req.user.id });
+    console.log({ user });
+
+    // 2 check if posted current password is correct
+    if (!user || !(user.correctPassword(passwordCurrent, user.password))) {
+        return next(new AppError("Incorrect password", 401))
+    }
+
+    // 3 If correct, update password
+    user.password = password
+    user.passwordConfirm = passwordConfirm
+
+    await user.save()
+    // 4 Log user in, send JWT
+    const token = signToken(user._id)
+
+    res.status(200).json({
+        status: true,
+        token,
+
+    })
+
 })
