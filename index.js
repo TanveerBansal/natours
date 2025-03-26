@@ -16,6 +16,7 @@ if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"))
 }
 
+
 // middle ware for API rate limit
 const limiter = rateLimit({
     max : 2,
