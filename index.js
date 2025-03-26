@@ -1,5 +1,6 @@
 const express = require("express")
 const morgan = require("morgan")
+const rateLimit = require("express-rate-limit")
 
 const tourRouter = require("./routes/tourRoutes")
 const userRouter = require("./routes/userRoutes")
@@ -14,6 +15,15 @@ console.log(process.env.NODE_ENV)
 if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"))
 }
+
+// middle ware for API rate limit
+const limiter = rateLimit({
+    max : 2,
+    windowMs : 60*60*1000,
+    message : "Too much request from you side, Please try after an hour." 
+})
+
+app.use("/api",limiter)
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()) //it is type of middleware
