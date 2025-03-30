@@ -6,6 +6,7 @@ const tourRouter = require("./routes/tourRoutes")
 const userRouter = require("./routes/userRoutes")
 const AppError = require("./utils/appError")
 const globalErrorHandler = require("./controllers/errorController")
+const {customRateLimiter} = require("./utils/customRateLimiter")
 
 const app = express()
 
@@ -17,14 +18,19 @@ if (process.env.NODE_ENV === "development") {
 }
 
 
-// middle ware for API rate limit
+// Middle ware for API rate limit
+//with package-----
 const limiter = rateLimit({
-    max : 2,
-    windowMs : 60*60*1000,
-    message : "Too much request from you side, Please try after an hour." 
+    max: 2,
+    windowMs: 60 * 60 * 1000,
+    message: "Too much request from you side, Please try after an hour."
 })
 
-app.use("/api",limiter)
+app.use("/api", limiter)
+
+// custom ratelimiter middleware----
+// app.use(customRateLimiter)
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()) //it is type of middleware
