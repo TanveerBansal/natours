@@ -1,6 +1,7 @@
 const express = require("express")
 const morgan = require("morgan")
 const rateLimit = require("express-rate-limit")
+const helmet = require("helmet")
 
 const tourRouter = require("./routes/tourRoutes")
 const userRouter = require("./routes/userRoutes")
@@ -12,7 +13,9 @@ const app = express()
 
 
 //1) MIDDLEWARE
-console.log(process.env.NODE_ENV)
+// security HTTP headers middleware
+app.use(helmet())
+
 if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"))
 }
@@ -30,6 +33,8 @@ app.use("/api", limiter)
 
 // custom ratelimiter middleware----
 // app.use(customRateLimiter)
+
+
 
 
 app.use(express.urlencoded({ extended: true }));
@@ -105,7 +110,7 @@ app.all("*", (req, res, next) => {
 })
 */
 
-app.all("*", (req, res, next) => {
+app.all("/*wildcard", (req, res, next) => {
 
     next(new AppError(`Can't find the ${req.originalUrl} on this server`, 404))
 })
