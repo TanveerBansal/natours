@@ -2,12 +2,14 @@ const express = require("express")
 const morgan = require("morgan")
 const rateLimit = require("express-rate-limit")
 const helmet = require("helmet")
+const mongoSanatize = require("express-mongo-sanitize")
+const xss = require("xss-clean")
 
 const tourRouter = require("./routes/tourRoutes")
 const userRouter = require("./routes/userRoutes")
 const AppError = require("./utils/appError")
 const globalErrorHandler = require("./controllers/errorController")
-const {customRateLimiter} = require("./utils/customRateLimiter")
+const { customRateLimiter } = require("./utils/customRateLimiter")
 
 const app = express()
 
@@ -24,7 +26,7 @@ if (process.env.NODE_ENV === "development") {
 // Middle ware for API rate limit
 //with package-----
 const limiter = rateLimit({
-    max: 2,
+    max: 100,
     windowMs: 60 * 60 * 1000,
     message: "Too much request from you side, Please try after an hour."
 })
@@ -38,7 +40,13 @@ app.use("/api", limiter)
 
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json()) //it is type of middleware
+app.use(express.json()) //body parser middleware
+
+// Data sanitization against Nosql query attacks
+// app.use(mongoSanatize())  //creating some type of issue so commented
+
+// Data sanitization againt XSS
+// app.use(xss())       //creating some type of issue so commented
 
 app.use(express.static(`${__dirname}/public`))
 
