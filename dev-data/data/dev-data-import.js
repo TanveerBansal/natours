@@ -1,6 +1,8 @@
 const fs = require("fs")
 const mongoose = require("mongoose")
 const Tour = require("../../models/tourModel")
+const User = require("../../models/userModal")
+const Review = require("../../models/reviewModel")
 const dotenv = require("dotenv")
 const { exit } = require("process")
 dotenv.config({ path: "./config.env" })
@@ -16,16 +18,20 @@ mongoose.connect(DB)
     .catch((err) => console.log(err.message))
 
 
-/*
+
 //READ FILE
 
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8'))
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'))
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'))
+const reviews = JSON.parse(fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8'))
 
 //add
 const importData = async () => {
 
 try {
     const newTour = await Tour.create(tours)
+    const newUser = await User.create(users, {validateBeforeSave: false})
+    const newReview = await Review.create(reviews)
     console.log("done");
     
 } catch (err) {
@@ -41,6 +47,8 @@ const deleteData = async () => {
 
 try {
     await Tour.deleteMany()
+    await User.deleteMany()
+    await Review.deleteMany()
     console.log("data deleted successfully");
 } catch (err) {
     console.log(err);
@@ -53,50 +61,50 @@ finally{
 
 if (process.argv[2] === "--import") importData()
 else if (process.argv[2] === "--delete") deleteData()
-*/
 
 
 
 
-fs.readFile(`${__dirname}/tours-simple.json`, 'utf-8', (err, data) => {
-    if (err) console.log(err);
+// ASYNC METHOD-----
+// fs.readFile(`${__dirname}/tours-simple.json`, 'utf-8', (err, data) => {
+//     if (err) console.log(err);
 
-    const tours = JSON.parse(data)
+//     const tours = JSON.parse(data)
 
-    //add
-    const importData = async () => {
+//     //add
+//     const importData = async () => {
 
-        try {
-            const newTour = await Tour.create(tours)
-            console.log("done");
+//         try {
+//             const newTour = await Tour.create(tours)
+//             console.log("done");
 
-        } catch (err) {
-            console.log(err);
+//         } catch (err) {
+//             console.log(err);
 
-        }
-        finally {
-            process.exit()
-        }
-    }
-    //delete
-    const deleteData = async () => {
+//         }
+//         finally {
+//             process.exit()
+//         }
+//     }
+//     //delete
+//     const deleteData = async () => {
 
-        try {
-            await Tour.deleteMany()
-            console.log("data deleted successfully");
-        } catch (err) {
-            console.log(err);
-        }
-        finally {
-            process.exit()
-        }
-    }
+//         try {
+//             await Tour.deleteMany()
+//             console.log("data deleted successfully");
+//         } catch (err) {
+//             console.log(err);
+//         }
+//         finally {
+//             process.exit()
+//         }
+//     }
 
 
-    if (process.argv[2] === "--import") importData()
-    else if (process.argv[2] === "--delete") deleteData()
+//     if (process.argv[2] === "--import") importData()
+//     else if (process.argv[2] === "--delete") deleteData()
 
-})
+// })
 
 
 
