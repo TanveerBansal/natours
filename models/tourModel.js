@@ -23,6 +23,7 @@ const tourSchema = new mongoose.Schema({
         type: Number, default: 4.5,
         min: [1, "A tour rating can't be less than 1"],
         max: [5, "A tour rating can't be exceed than 5"],
+        set:(val)=> Math.round(val *10)/10    //set function to round the decimal from going too long
     },
     ratingsQuantity: { type: Number, default: 0 },
     rating: { type: Number, default: 4.5 },
