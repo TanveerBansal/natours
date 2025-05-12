@@ -23,7 +23,7 @@ const tourSchema = new mongoose.Schema({
         type: Number, default: 4.5,
         min: [1, "A tour rating can't be less than 1"],
         max: [5, "A tour rating can't be exceed than 5"],
-        set:(val)=> Math.round(val *10)/10    //set function to round the decimal from going too long
+        set: (val) => Math.round(val * 10) / 10    //set function to round the decimal from going too long
     },
     ratingsQuantity: { type: Number, default: 0 },
     rating: { type: Number, default: 4.5 },
@@ -82,7 +82,10 @@ const tourSchema = new mongoose.Schema({
 
 
 // INDEXING THE PRICE FIELD, 
-tourSchema.index({price:1,ratingsAverage:1})
+tourSchema.index({ price: 1, ratingsAverage: 1 });
+tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: "2dsphere" });
+
 
 
 
@@ -93,8 +96,8 @@ tourSchema.virtual('durationWeeks').get(function () {
 })
 
 //VIRTUAL REVIEWA POPULATE
-tourSchema.virtual('reviews',{
-    ref:"Review",
+tourSchema.virtual('reviews', {
+    ref: "Review",
     foreignField: "tour",
     localField: "_id"
 })
@@ -141,11 +144,11 @@ tourSchema.pre(/^find/, function (next) {
 // })
 
 //AGGREGATE MIDDLEWARE
-tourSchema.pre('aggregate', function (next) {
-    this.pipeline().unshift({ $match: { secretTour: { $ne: true } } })
-    console.log(this.pipeline())
-    next()
-})
+// tourSchema.pre('aggregate', function (next) {
+//     this.pipeline().unshift({ $match: { secretTour: { $ne: true } } })
+//     console.log(this.pipeline())
+//     next()
+// })
 
 const Tour = mongoose.model("Tour", tourSchema)
 
