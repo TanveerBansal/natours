@@ -1,3 +1,4 @@
+const path = require("path")
 const express = require("express")
 const morgan = require("morgan")
 const rateLimit = require("express-rate-limit")
@@ -14,8 +15,15 @@ const { customRateLimiter } = require("./utils/customRateLimiter")
 
 const app = express()
 
+app.set('view engine', 'pug')//-> pug templete to render the website on browser throught server
+app.set('views setting', path.join(__dirname, "views"))//
+
+
 
 //1) MIDDLEWARE
+
+app.use(express.static(path.join(__dirname, 'public')))
+
 // security HTTP headers middleware
 app.use(helmet())
 
@@ -49,7 +57,6 @@ app.use(express.json()) //body parser middleware
 // Data sanitization againt XSS
 // app.use(xss())       //creating some type of issue so commented
 
-app.use(express.static(`${__dirname}/public`))
 
 // app.use((req,res,next)=>{
 //     console.log("Hello from middleware 1");
@@ -76,24 +83,9 @@ app.post("/", (req, res) => {
 
 
 //3) ROUTES
-
-// app.get('/api/v1/tours', getAllTours )
-// app.get('/api/v1/tours/:id',getTour )
-// app.post('/api/v1/tours', createTour)
-// app.patch("/api/v1/tours/:id",updateTour )
-// app.delete("/api/v1/tours/:id", deleteTour)
-
-// app.route('/api/v1/tours').get(getAllTours).post(createTour)
-// app.route('/api/v1/tours/:id').get(getTour).patch(updateTour).delete(deleteTour)
-
-// app.route("/api/v1/users").get(getAllUsers).post(createUser)
-// app.route("/api/v1/users/:id").get(getUser).patch(updateUser).delete(deleteUser)
-
-
-
-
-
-
+app.get('/',(req,res,next)=>{
+    res.status(200).render('base')
+})
 
 
 app.use("/api/v1/users", userRouter)
