@@ -10,10 +10,12 @@ html
       title Natours | #{title}
   
   body
-    // HEADER
+    // HEADER 
+    //- simple like importing component. here use keyword 'include' then pug file name
     include _header
         
     // CONTENT
+    //- Here it will inject the content direct into this file.
     block content
       h1 This is a placeholder heading
       

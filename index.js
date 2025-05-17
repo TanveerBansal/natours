@@ -9,6 +9,7 @@ const xss = require("xss-clean")
 const tourRouter = require("./routes/tourRoutes")
 const userRouter = require("./routes/userRoutes")
 const reviewRouter = require("./routes/reviewRoutes")
+const viewRouter = require("./routes/viewRoutes")
 const AppError = require("./utils/AppError")
 const globalErrorHandler = require("./controllers/errorController")
 const { customRateLimiter } = require("./utils/customRateLimiter")
@@ -83,9 +84,8 @@ app.post("/", (req, res) => {
 
 
 //3) ROUTES
-app.get('/',(req,res,next)=>{
-    res.status(200).render('base')
-})
+
+app.use('/', viewRouter)
 
 
 app.use("/api/v1/users", userRouter)
