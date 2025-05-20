@@ -5,6 +5,7 @@ const rateLimit = require("express-rate-limit")
 const helmet = require("helmet")
 const mongoSanatize = require("express-mongo-sanitize")
 const xss = require("xss-clean")
+const cookieParser = require('cookie-parser');
 
 const tourRouter = require("./routes/tourRoutes")
 const userRouter = require("./routes/userRoutes")
@@ -51,6 +52,8 @@ app.use("/api", limiter)
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()) //body parser middleware
+app.use(cookieParser());
+
 
 // Data sanitization against Nosql query attacks
 // app.use(mongoSanatize())  //creating some type of issue so commented
