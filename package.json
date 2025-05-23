@@ -2,16 +2,19 @@
   "name": "natours",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
     "start:prod": "cross-env NODE_ENV=production nodemon server.js",
-    "debug": "ndb server.js"
+    "debug": "ndb server.js",
+    "dev": "parcel public/js/login.js --dist-dir public/dist --no-source-maps",
+    "build": "parcel build public/js/login.js --dist-dir public/dist"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "axios": "^1.9.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "cross-env": "^7.0.3",
@@ -29,5 +32,9 @@
     "slugify": "^1.6.6",
     "validator": "^13.12.0",
     "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "buffer": "^6.0.3",
+    "parcel": "^2.15.1"
   }
 }
