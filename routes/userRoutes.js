@@ -1,6 +1,6 @@
 const express = require("express")
-const { getAllUsers, getUser, createUser, updateUser, deleteUser, updateMe, deleteMe, getMe } = require("../controllers/userController")
-const { signup,login, logout,forgotPassword,resetPassword,protect,updatePassword,restrictTo } = require("../controllers/authController")
+const { getAllUsers, getUser, createUser, updateUser, deleteUser, updateMe, deleteMe, getMe, uploadUserPhoto } = require("../controllers/userController")
+const { signup, login, logout, forgotPassword, resetPassword, protect, updatePassword, restrictTo } = require("../controllers/authController")
 // const protectRoute = require("../controllers/authController")
 
 const router = express.Router()
@@ -14,8 +14,8 @@ router.patch("/resetPassword/:token", resetPassword)
 router.use(protect)
 
 router.patch("/updatePassword", updatePassword)
-router.get("/getme",getMe, getUser)
-router.patch("/updateMe", updateMe)
+router.get("/getme", getMe, getUser)
+router.patch("/updateMe", uploadUserPhoto, updateMe)
 router.delete("/deleteMe", deleteMe)
 
 

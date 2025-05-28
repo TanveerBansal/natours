@@ -4,7 +4,7 @@ module.exports = fn => {
          // console.log(err + "-thsi log from catchaync l4");
 
          // next(err)
-      // });
+      // });      
        fn(req, res, next).catch(next);
    };
 };
