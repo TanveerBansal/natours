@@ -1,7 +1,7 @@
 const crypto = require("crypto")
 const { default: mongoose } = require("mongoose");
 const validator = require("validator");
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
 
 
 const userSchema = new mongoose.Schema({
@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema({
     },
     photo: {
         type: String,
+        default: 'default.jpg'
     },
     role: {
         type: String,
