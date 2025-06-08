@@ -1,8 +1,59 @@
+const multer = require('multer');
+const sharp = require('sharp');
 const Tour = require("../models/tourModel")
 const APIfeatures = require("../utils/apifeatures")
 const AppError = require("../utils/AppError")
 const catchAsync = require("../utils/catchAsync")
 const { deleteOne, updateOne, createOne, getOne, getAll } = require("./handlerFactory")
+
+
+
+
+
+// ---The file is temp. stored on main memory as buffer for processing.
+const multerStorage = multer.memoryStorage();
+
+
+// This is the filter to check, if the uploaded file is image or not
+const multerFilter = (req, file, cb) => {
+    if (file?.mimetype?.startsWith('image')) {
+        cb(null, true);
+    }
+    else {
+        cb(new AppError('Not an image! Please upload only images.'), false)
+    }
+}
+
+const upload = multer({
+    storage: multerStorage,
+    fileFilter: multerFilter
+})
+
+exports.uploadTourImages = upload.fields([
+    { name: 'imageCover', maxCount: 1 },
+    { name: 'images', maxCount: 3 },
+])
+
+
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+    if (!req.files.imageCover || !req.files.images) return next();
+
+    req.body.imageCover = `tour-${req.params.id}-${Date.now()}.jpeg`
+    req.body.images = [];
+    await sharp(req.files.coverImage[0].buffer).resize(2000, 1333).toFormat('jpeg').jpeg({ quality: 90 }).toFile(`public/img/tours/${req.body.imageCover}`);
+
+    await Promise.all(
+        req.files.images.map(async (file, i) => {
+            const fileName = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`
+            await sharp(file.buffer).resize(2000, 1333).toFormat('jpeg').jpeg({ quality: 90 }).toFile(`public/img/tours/${fileName}`);
+            req.body.images.push(fileName);
+        })
+    )
+
+    next();
+})
+
+
 
 exports.aliasTopTours = (req, res, next) => {
     req.query.limit = "5"
